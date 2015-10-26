@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
+
+APP="$1"; IMAGE="dokku/$APP"; CACHE_DIR="$DOKKU_ROOT/$APP/cache"
+DIR=/app
+LOG_DATE="$(date +%Y-%m-%d-%H-%M-%S)"
+CUSTOM_HOOKS_LOG_DIR=${CUSTOM_HOOKS_LOG_DIR:=/tmp/custom-hooks-logs}
+
+[[ ! -e "$CUSTOM_HOOKS_LOG_DIR" ]] && mkdir -p "$CUSTOM_HOOKS_LOG_DIR" && chmod 700 "$CUSTOM_HOOKS_LOG_DIR"
+
+echo "-----> Executing post-build-buildstep ..."
+COMMAND=$(cat <<EOF
+if [ -f $DIR/post-build-buildstep ]; then
+        bash $DIR/post-build-buildstep
+fi
+sleep 1 # wait so that docker run has not exited before docker attach
+EOF
+)
+DOCKER_ARGS=$(: | pluginhook docker-args $APP)
+id=$(docker run -d -v $CACHE_DIR:/cache $DOCKER_ARGS $IMAGE /bin/bash -e -c "$COMMAND")
+docker attach $id
+test $(docker wait $id) -eq 0
+docker commit $id $IMAGE > /dev/null
+UMASK=$(umask); umask 077; docker logs "$id" > "$CUSTOM_HOOKS_LOG_DIR/$APP-post-build-buildstep_$LOG_DATE.log"; umask "$UMASK"

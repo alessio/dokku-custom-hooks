@@ -11,7 +11,7 @@ CUSTOM_HOOKS_LOG_DIR=${CUSTOM_HOOKS_LOG_DIR:=/tmp/custom-hooks-logs}
 echo "-----> Executing post-build-buildstep ..."
 COMMAND=$(cat <<EOF
 if [ -f $DIR/post-build-buildstep ]; then
-        bash $DIR/post-build-buildstep
+  bash $DIR/post-build-buildstep
 fi
 sleep 1 # wait so that docker run has not exited before docker attach
 EOF

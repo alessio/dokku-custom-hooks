@@ -16,7 +16,7 @@ fi
 sleep 1 # wait so that docker run has not exited before docker attach
 EOF
 )
-DOCKER_ARGS=$(: | pluginhook docker-args $APP)
+DOCKER_ARGS=$(: | plugn trigger docker-args-build $APP)
 id=$(docker run -d -v $CACHE_DIR:/cache $DOCKER_ARGS $IMAGE /bin/bash -e -c "$COMMAND")
 docker attach $id
 test $(docker wait $id) -eq 0

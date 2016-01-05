@@ -1,0 +1,6 @@
+[plugin]
+name = "dokku-custom-hooks"
+description = "Inject deb packages into dokku based on files in project"
+version = "0.0.1"
+website_url = "http://gitlab.smartodds.co.uk/alessio/dokku-custom-hooks"
+[plugin.config]

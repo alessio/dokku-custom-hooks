@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -eo pipefail; [[ $DOKKU_TRACE ]] && set -x
 
-APP="$1"; IMAGE="dokku/$APP"; CACHE_DIR="$DOKKU_ROOT/$APP/cache"
+APP="$1"; IMAGE_TAG=$(get_running_image_tag $APP); IMAGE=$(get_app_image_name $APP $IMAGE_TAG)
+CACHE_DIR="$DOKKU_ROOT/$APP/cache"
 DIR=/app
 LOG_DATE="$(date +%Y-%m-%d-%H-%M-%S)"
 CUSTOM_HOOKS_LOG_DIR=${CUSTOM_HOOKS_LOG_DIR:=/tmp/custom-hooks-logs}
